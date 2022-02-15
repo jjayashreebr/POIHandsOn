@@ -2,11 +2,16 @@ package codebase;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.poi.xssf.usermodel.XSSFSheet;
+
+import com.opencsv.CSVWriter;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.*;
@@ -16,21 +21,22 @@ public class ConvertToCSVFile {
 	public static void main(String[] args) throws IOException {
 		
 		
-		String path = System.getProperty("user.dir") + "/LargeDocument.xlsx";
+		String path = System.getProperty("user.dir") + "/Fruits.xlsx";
 		try (// create a new XLSX file
 		XSSFWorkbook workbook1 = new XSSFWorkbook()) {
 			OutputStream outputStream = new FileOutputStream(path);
 			// create a new sheet
-			XSSFSheet sheet = workbook1.createSheet("Apache POI XSSF");
+			XSSFSheet sheet = workbook1.createSheet("fruits");
 			// create a new sheet
-			Row row1  = sheet.createRow(1);
-			// create a new cell
-			Cell cell1 = row1.createCell(1);
-			// set cell value
-			cell1.setCellValue("File Format Developer Guide");
 			
-			Cell cell2 = row1.createCell(2);
-			cell2.setCellValue("File Format Developer Guide");
+			for(int i=0;i<3;i++) {
+				Row row  = sheet.createRow(i);
+			for(int j=0;j<3;j++) {
+			
+			Cell cell1 = row.createCell(j);
+			// set cell value
+			cell1.setCellValue("data"+i);
+			}}
 			// save file
 			workbook1.write(outputStream);
 			outputStream.close();
@@ -41,22 +47,29 @@ public class ConvertToCSVFile {
 		XSSFSheet selSheet = workBook.getSheetAt(0);
 		// Loop through all the rows
 		Iterator<?> rowIterator = selSheet.iterator();
+		//csv file
+		path = System.getProperty("user.dir") + "/output.csv";
+		CSVWriter csvWriter = new CSVWriter(new FileWriter(path));
+		
 		while (rowIterator.hasNext()) {
 		  Row row = (Row) rowIterator.next();
-		  // Loop through all rows and add","
-		  Iterator<?> cellIterator = row.cellIterator();
-		  StringBuffer stringBuffer = new StringBuffer();
-		  while (cellIterator.hasNext()) {
-		  Cell cell = (Cell) cellIterator.next();
-		  if (stringBuffer.length() != 0) {
-		    stringBuffer.append(",");
-		  }
-		  stringBuffer.append(cell.getStringCellValue());
-		  }
-		  System.out.println(stringBuffer.toString());
+	
+		  String output[] = new String[3];
+		  for (int j = 0; j < 3 ; j++){
+		  Cell cell = (Cell) row.getCell(j);
+		  output[j]=cell.getStringCellValue();
+	       }
+		  csvWriter.writeNext(output);
 		}
+		csvWriter.close();
 		workBook.close();
 		fileInStream.close();
+		
+		
+		
+		
+		
+		
 	}
 
 }
